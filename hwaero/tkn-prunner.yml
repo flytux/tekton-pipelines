@@ -1,0 +1,71 @@
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: build
+  name: clusterrole-tekton-prunner
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources:
+      - pipelines
+      - pipelineruns
+    verbs:
+      - list
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: clusterrole-bidning-tekton-prunner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: clusterrole-tekton-prunner
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: build
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pr-delete
+  namespace: build
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - command:
+                - /bin/sh
+                - '-c'
+                - |
+                  #echo "${config}" > config
+                  #cp config ~/.kube/
+
+                  ns=build
+            
+                  for r in $(kubectl get pipelines.tekton.dev -o name -n $ns | cut -d "/" -f 2);  
+            
+                  do tkn pr delete --label tekton.dev/pipeline=$r -n $ns --keep 2 --force -o jsonpath='{range .items[?(@.status.conditions[*].status=="True")]}';  
+                  
+                  echo "--- pipeline " $r " deleted ---";
+                  
+                  done;  
+            
+                  for r in $(kubectl get pipelines.tekton.dev -o name -n $ns | cut -d "/" -f 2);  
+                  do tkn pr delete --label tekton.dev/pipeline=$r -n $ns --keep 2 --force -o jsonpath='{range .items[?(@.status.conditions[*].status=="False")]}';  
+                  echo "--- pipeline " $r " deleted ---";  
+                  
+                  done;     
+                                    
+              image: docker.hanwhasystem.co.kr/dev-tools:init
+              imagePullPolicy: Always
+              name: tkn-prunner
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+  schedule: '*/10 * * * *'
+  successfulJobsHistoryLimit: 1 
+  suspend: false
