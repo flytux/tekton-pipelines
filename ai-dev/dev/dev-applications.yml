@@ -1,0 +1,189 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: ctl
+    stage: dev
+  name: dev-hone-aihub-go-aidt-llm-ctl
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/ctl-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: fileserver
+    stage: dev
+  name: dev-hone-aihub-go-aidt-llm-fileserver
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/fileserver-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: router
+    stage: dev
+  name: dev-hone-aihub-go-aidt-llm-router
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/router-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: proxy
+    stage: dev
+  name: dev-hone-aihub-go-aidt-llm-proxy-clova
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/proxy-clova-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: portal-client
+    stage: dev
+  name: dev-portal-aidt-llm-portal-client
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: client/overlay
+    repoURL: http://gitea.gitea:3000/argo/portal-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: portal-server
+    stage: dev
+  name: dev-portal-aidt-llm-portal-server
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: server/overlay
+    repoURL: http://gitea.gitea:3000/argo/portal-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: qna
+    stage: dev
+  name: dev-qna-aidt-llm-qna
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/qna-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: studio
+    stage: dev
+  name: dev-studio-aidt-llm-studio
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/studio-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: studio-web
+    stage: dev
+  name: dev-studio-web-aidt-llm-studio-web
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-llm-dev
+    server: https://10.50.0.7:6443
+  project: default
+  source:
+    path: overlay
+    repoURL: http://gitea.gitea:3000/argo/studio-web-deploy.git
+    targetRevision: dev
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true

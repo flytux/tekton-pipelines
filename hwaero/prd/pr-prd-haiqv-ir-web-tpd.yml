@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: web-fe
+    stage: tpd
+    from: pipeline-run
+  generateName: tpd-haiqv-ir-web-tpd-pr-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: buildah
+  params:
+  - name: build-stage
+    value: tpd
+  - name: git-repo-name
+    value: haiqv-ir-web
+  - name: git-branch
+    value: tpd
+  - name: git-url
+    value: "http://gitea.gitea:3000/Haiqv-IR"
+  - name: gitops-url
+    value: "http://gitea.gitea:3000/Haiqv-IR"
+  - name: image-url
+    value: "10.42.186.95:5000"
+  - name: gitops-repo-name
+    value: haiqv-ir-web-deploy
+  - name: gitops-branch
+    value: master
+  - name: argo-app-name
+    value: "haiqv-ir-web-tpd"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: fileserver
+    stage: dev
+  generateName: dev-hone-aihub-go-filserver-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: build-buildah
+  params:
+  - name: build-stage
+    value: dev
+  - name: git-url
+    value: "http://gitea.ai-dev/argo"
+  - name: git-repo-name
+    value: hone-aihub-go
+  - name: git-branch
+    value: master
+  - name: tls-verify
+    value: "false"
+  - name: image-url
+    value: "docker.ai-dev"
+  - name: image-extra-url
+    value: "aidt-dev-atr-registry.ncr.gov-ntruss.com"
+  - name: image-name
+    value: "aidt-llm-fileserver"
+  - name: dockerfile 
+    value: "./fileserver/Dockerfile-fileserver"
+  - name: gitops-repo-name
+    value: fileserver-deploy
+  - name: gitops-revision
+    value: dev
+  - name: deploy-manifest
+    value: "./overlay/kustomization.yaml"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

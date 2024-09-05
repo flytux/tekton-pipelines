@@ -1,0 +1,100 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  labels:
+    app: buildah
+  name: buildah
+spec:
+  params:
+  - default: kw-mvn
+    name: git-repo-name
+    type: string
+  - default: master
+    name: git-branch
+    type: string
+  - default: "true"
+    name: insecure-registry
+    type: string
+  - name: git-url
+    type: string
+  - default: ""
+    name: git-refspec
+    type: string
+  - name: gitops-url
+    type: string
+  - name: image-url
+    type: string
+  - default: Dockerfile
+    name: dockerfile
+    type: string
+  - name: gitops-repo-name
+    type: string
+  - default: master
+    name: gitops-branch
+    type: string
+  - default: dev
+    name: build-stage
+    type: string
+  - name: argo-app-name
+    type: string
+  tasks:
+  - name: generate-id
+    params:
+    - name: base-version
+      value: $(params.build-stage)
+    taskRef:
+      kind: Task
+      name: generate-build-id
+  - name: clone-sources
+    params:
+    - name: url
+      value: $(params.git-url)/$(params.git-repo-name)
+    - name: revision
+      value: $(params.git-branch)
+    - name: refspec
+      value: $(params.git-refspec)
+    taskRef:
+      kind: Task
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: source
+  - name: build-image
+    params:
+    - name: IMAGE
+      value: $(params.image-url)/$(params.git-repo-name):$(tasks.generate-id.results.build-id)
+    - name: DOCKERFILE
+      value: $(params.dockerfile)
+    runAfter:
+    - clone-sources
+    taskRef:
+      kind: Task
+      name: buildah
+    workspaces:
+    - name: source
+      workspace: source
+  - name: deploy
+    params:
+    - name: argo-app-name
+      value: $(params.argo-app-name)
+    - name: gitops-url
+      value: $(params.gitops-url)/$(params.gitops-repo-name)
+    - name: image-url
+      value: $(params.image-url)
+    - name: build-id
+      value: $(tasks.generate-id.results.build-id)
+    - name: gitops-revision
+      value: $(params.gitops-branch)
+    - name: build-stage
+      value: $(params.build-stage)
+    runAfter:
+    - build-image
+    taskRef:
+      kind: Task
+      name: deploy
+    workspaces:
+    - name: gitops
+      workspace: gitops
+  workspaces:
+  - name: source
+  - name: gitops

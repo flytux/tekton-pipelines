@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: web-be
+    stage: prd
+    from: pipeline-run
+  generateName: prd-haiqv-ir-be-pr-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: build-gradle-jib
+  params:
+  - name: build-stage
+    value: prd
+  - name: git-repo-name
+    value: haiqv-ir-be
+  - name: git-branch
+    value: master
+  - name: git-url
+    value: "http://gitea.gitea:3000/Haiqv-IR"
+  - name: gitops-url
+    value: "http://gitea.gitea:3000/Haiqv-IR"
+  - name: image-url
+    value: "10.42.186.95:5000"
+  - name: insecure-registry
+    value: "true"
+  - name: gitops-repo-name
+    value: "haiqv-ir-be-deploy"
+  - name: gitops-branch
+    value: master
+  - name: argo-app-name
+    value: "haiqv-ir-be"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: qna
+    stage: dev
+  generateName: dev-qna-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: build-buildah
+  params:
+  - name: build-stage
+    value: dev
+  - name: git-url
+    value: "http://gitea.ai-dev/argo"
+  - name: git-repo-name
+    value: "qna"
+  - name: git-branch
+    value: "master"
+  - name: tls-verify
+    value: "false"
+  - name: image-url
+    value: "docker.ai-dev"
+  - name: image-extra-url
+    value: "aidt-dev-atr-registry.ncr.gov-ntruss.com"
+  - name: image-name
+    value: "aidt-llm-qna"
+  - name: dockerfile 
+    value: "./Dockerfile"
+  - name: gitops-repo-name
+    value: "qna-deploy"
+  - name: gitops-revision
+    value: "dev"
+  - name: deploy-manifest
+    value: "./overlay/kustomization.yaml"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

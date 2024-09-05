@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: portal-server
+    stage: qa
+  generateName: qa-portal-server-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: build-buildah-qa
+  params:
+  - name: build-stage
+    value: qa
+  - name: git-url
+    value: "http://gitea.ai-dev/argo"
+  - name: git-repo-name
+    value: portal
+  - name: git-branch
+    value: master
+  - name: tls-verify
+    value: "false"
+  - name: image-url
+    value: "docker.ai-dev"
+  - name: image-name
+    value: "aidt-llm-portal-server"
+  - name: image-extra-url
+    value: "aidt-qa-llm-registry.ncr.gov-ntruss.com"
+  - name: dockerfile 
+    value: "./Dockerfile"
+  - name: context 
+    value: "server"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)

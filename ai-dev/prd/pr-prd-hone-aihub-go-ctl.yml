@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: ctl
+    stage: prd
+  generateName: prd-hone-aihub-go-ctl-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: build-buildah-prd
+  params:
+  - name: build-stage
+    value: prd
+  - name: git-url
+    value: "http://gitea.ai-dev/argo"
+  - name: git-repo-name
+    value: hone-aihub-go
+  - name: git-branch
+    value: master
+  - name: tls-verify
+    value: "false"
+  - name: image-url
+    value: "docker.ai-dev"
+  - name: image-extra-url
+    value: "aidt-prd-llm-registry.ncr.gov-ntruss.com"
+  - name: image-name
+    value: "aidt-llm-ctl"
+  - name: dockerfile 
+    value: "./ctl/Dockerfile-ctl"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

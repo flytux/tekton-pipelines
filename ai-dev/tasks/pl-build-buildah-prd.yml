@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-buildah-prd
+spec:
+  params:
+    - name: build-stage
+      default: qa
+    - name: git-repo-name 
+      default: kw-mvn
+    - name: git-branch
+      default: master
+    - name: tls-verify
+      default: "false"
+    - name: git-url
+    - name: image-url 
+    - name: image-extra-url 
+    - name: image-name 
+    - name: dockerfile
+    - name: context
+      default: .
+  workspaces:
+    - name: source 
+  tasks:
+    - name: generate-id
+      taskRef:
+        name: generate-build-id
+      params:
+        - name: base-version
+          value: $(params.build-stage)
+    - name: clone-sources
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)/$(params.git-repo-name)
+        - name: revision
+          value: $(params.git-branch)
+      workspaces:
+        - name: output
+          workspace: source
+    - name: build-image
+      taskRef:
+        name: buildah
+      runAfter:
+        - clone-sources
+      params:
+        - name: IMAGE
+          value: $(params.image-url)/$(params.image-name):$(tasks.generate-id.results.build-id)
+        - name: IMAGE_EXTRA
+          value: $(params.image-extra-url)/$(params.image-name):latest
+        - name: TLSVERIFY
+          value: $(params.tls-verify)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.context)
+      workspaces:
+        - name: source
+          workspace: source

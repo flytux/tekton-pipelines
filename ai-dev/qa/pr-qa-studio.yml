@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: studio
+    stage: qa
+  generateName: qa-studio-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: build-buildah-qa
+  params:
+  - name: build-stage
+    value: qa
+  - name: git-url
+    value: "http://gitea.ai-dev/argo"
+  - name: git-repo-name
+    value: studio
+  - name: git-branch
+    value: master
+  - name: tls-verify
+    value: "false"
+  - name: image-url
+    value: "docker.ai-dev"
+  - name: image-extra-url
+    value: "aidt-qa-llm-registry.ncr.gov-ntruss.com"
+  - name: image-name
+    value: "aidt-llm-studio"
+  - name: dockerfile 
+    value: "./Dockerfile"
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)

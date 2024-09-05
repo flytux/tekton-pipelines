@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  labels:
+    app: ai-backend
+    stage: dev
+    from: pipeline-run
+  generateName: dev-haiqv-ir-ai-backend-pr-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: buildah
+  params:
+  - name: build-stage
+    value: dev
+  - name: git-repo-name
+    value: haiqv-ir-ai-backend
+  - name: dockerfile
+    value: "./Dockerfile"
+  - name: git-branch
+    value: master
+  - name: git-url
+    value: "http://gitea.gitea:3000/Haiqv-IR"
+  - name: gitops-url
+    value: "http://gitea.gitea:3000/Haiqv-IR"
+  - name: argo-app-name
+    value: "dev-haiqv-ir-ai-backend"
+  - name: image-url
+    value: "docker.hanwhasystem.co.kr"
+  - name: gitops-repo-name
+    value: haiqv-ir-ai-backend-deploy
+  - name: gitops-branch
+    value: master
+  workspaces:
+  - name: source
+    persistentvolumeclaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

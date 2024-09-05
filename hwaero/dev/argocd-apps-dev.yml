@@ -1,0 +1,105 @@
+apiVersion: v1
+items:
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    labels:
+      stage: dev
+      app: ai-backend
+    name: dev-haiqv-ir-ai-backend
+    namespace: argocd
+  spec:
+    destination:
+      namespace: app-haiqv-ir-dev
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: dev
+      repoURL: http://gitea.gitea:3000/Haiqv-IR/haiqv-ir-ai-backend-deploy
+      targetRevision: master
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    labels:
+      stage: dev
+      app: web-au
+    name: dev-haiqv-ir-au
+    namespace: argocd
+  spec:
+    destination:
+      namespace: app-haiqv-ir-dev
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: dev
+      repoURL: http://gitea.gitea:3000/Haiqv-IR/haiqv-ir-au-deploy
+      targetRevision: master
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    labels:
+      stage: dev
+      app: web-be
+    name: dev-haiqv-ir-be
+    namespace: argocd
+  spec:
+    destination:
+      namespace: app-haiqv-ir-dev
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: dev
+      repoURL: http://gitea.gitea:3000/Haiqv-IR/haiqv-ir-be-deploy
+      targetRevision: master
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    labels:
+      stage: dev
+      app: web-fe
+    name: dev-haiqv-ir-web
+    namespace: argocd
+  spec:
+    destination:
+      namespace: app-haiqv-ir-dev
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: dev
+      repoURL: http://gitea.gitea:3000/Haiqv-IR/haiqv-ir-web-deploy
+      targetRevision: master
+    syncPolicy:
+      syncOptions:
+      - CreateNamespace=true
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    labels:
+      stage: dev
+      app: web-fe
+    name: dev-haiqv-ir-web-tpd
+    namespace: argocd
+  spec:
+    destination:
+      namespace: app-haiqv-ir-dev
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: tpd
+      repoURL: http://gitea.gitea:3000/Haiqv-IR/haiqv-ir-web-deploy
+      targetRevision: master
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+kind: List
+metadata:
+  resourceVersion: ""
